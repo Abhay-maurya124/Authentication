@@ -5,6 +5,7 @@ require("dotenv").config();
 require("./models/db");
 
 const authrouter = require("./routes/AuthRouter");   // correct path
+const ProductRouter = require("./routes/ProductRouter");   // correct path
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.get("/ping", (req, res) => {
 });
 
 app.use("/auth", authrouter);
+app.use("/products", ProductRouter);
 
 app.listen(PORT, () => {
   console.log(`server is running ${PORT}`);
