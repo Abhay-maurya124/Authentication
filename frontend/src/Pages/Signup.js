@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import { handleError } from "../Utils";
+import { handleError, handleSuccess } from "../Utils";
 
 const Signup = () => {
   const [signupInfo, setsignupInfo] = useState({
@@ -9,6 +9,8 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
+
   const handlechange = (e) => {
     const { name, value } = e.target;
     console.log(name, value);
@@ -24,16 +26,34 @@ const Signup = () => {
       return handleError("Name,email and password are required");
     }
     try {
-       const url = 'https://localhost:8080/auth/signup' 
-       const response = await fetch(url,{
-        method:'POST',
-        headers:{
-            'contentType':'application/json'
+      const url = "http://localhost:8000/auth/signup";
+      const response = await fetch(url, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
         },
-        body:JSON.stringify(signupInfo)
-       })
+
+        body: JSON.stringify(signupInfo),
+      });
+      const result = await response.json();
+      const { success, message, error } = result;
+      if (success) {
+        handleSuccess(message);
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
+      } else if (error) {
+        const details = error?.details[0].message;
+        handleError(details);
+      }
+      else if(!success){
+        handleSuccess(message)
+      }
+
+      console.log(result);
     } catch (error) {
-        handleError(error)
+      handleError(error);
     }
   };
 
